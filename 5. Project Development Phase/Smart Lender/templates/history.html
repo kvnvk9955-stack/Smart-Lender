@@ -1,0 +1,85 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div class="glass-card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; border-bottom: 1px solid var(--glass-border); padding-bottom: 1rem;">
+        <h2 class="section-title" style="margin-bottom: 0;"><i class="fa-solid fa-clock-rotate-left"></i> Prediction History Logs</h2>
+        <span class="badge badge-info" style="font-size: 0.9rem; padding: 0.4rem 0.8rem;">
+            Total Logged: {{ history|length }}
+        </span>
+    </div>
+
+    {% if history %}
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date & Time</th>
+                        <th>Applicant Details</th>
+                        <th>Profile</th>
+                        <th>Financials</th>
+                        <th>Model Details</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for h in history %}
+                        <tr>
+                            <td style="font-size: 0.85rem; color: var(--text-muted);">
+                                {{ h.time }}
+                            </td>
+                            <td>
+                                <strong>{{ h.name }}</strong><br>
+                                <span style="font-size: 0.8rem; color: var(--text-muted);">{{ h.email }}</span><br>
+                                <span class="badge" style="background: rgba(138, 43, 226, 0.08); color: var(--text-main); font-size: 0.7rem; padding: 0.1rem 0.4rem; margin-top: 0.2rem;">{{ h.role }}</span>
+                            </td>
+                            <td style="font-size: 0.85rem;">
+                                Gender: {{ h.gender }}<br>
+                                Education: {{ h.education }}<br>
+                                Married: {{ h.married }}
+                            </td>
+                            <td style="font-size: 0.85rem;">
+                                Income: ${{ "{:,.0f}".format(h.income) }}/mo<br>
+                                Loan: ${{ "{:,.0f}".format(h.loan_amount * 1000) }}<br>
+                                Term: {{ h.loan_term }} Days
+                            </td>
+                            <td>
+                                <span style="font-size: 0.85rem;">{{ h.model_name }}</span><br>
+                                <span style="font-size: 0.75rem; color: var(--text-muted);">Prob: {{ (h.probability * 100)|round(1) }}%</span>
+                            </td>
+                            <td>
+                                {% if h.status == 'Approved' %}
+                                    <span class="badge badge-success"><i class="fa-solid fa-circle-check"></i> Approved</span>
+                                {% else %}
+                                    <span class="badge badge-danger"><i class="fa-solid fa-circle-xmark"></i> Rejected</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div style="display: flex; gap: 0.5rem; align-items: center;">
+                                    <a href="{{ url_for('result', prediction_id=h.prediction_id) }}" class="btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; border-radius: 6px; display: inline-flex;" title="View Result Details">
+                                        <i class="fa-solid fa-eye"></i> View
+                                    </a>
+                                    
+                                    <form action="{{ url_for('delete_prediction', prediction_id=h.prediction_id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this log entry? This will remove applicant profiles and loan details from the tables.');" style="display: inline;">
+                                        <button type="submit" class="btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; border-radius: 6px; color: var(--error); border-color: rgba(239, 68, 68, 0.3); background: rgba(239, 68, 68, 0.02); display: inline-flex;" title="Delete Record">
+                                            <i class="fa-solid fa-trash-can"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div style="text-align: center; padding: 4rem 1rem;">
+            <i class="fa-solid fa-folder-open" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 1rem;"></i>
+            <h3>No past predictions logged yet</h3>
+            <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Create applicant prediction models to view database entries here.</p>
+            <a href="{{ url_for('predict') }}" class="btn-primary"><i class="fa-solid fa-wand-magic-sparkles"></i> Predict Eligibility</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
