@@ -317,7 +317,7 @@ This project demonstrates practical experience in:
 
 ## 👨‍💻 Developd By
 
-**Venkata Naga Vamsi Krishna Kolli**
+**Venkata Naga Vamsi Krishna Kolli, **
 **Akshaya Vadduri**
 
 * GitHub: https://github.com/kvnvk9955-stack
