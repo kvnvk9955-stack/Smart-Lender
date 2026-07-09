@@ -1,0 +1,97 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div class="glass-card result-card">
+
+    {% if prediction.prediction_status == 'Approved' %}
+        <!-- APPROVED RESULT STATE -->
+        <div class="result-icon result-approved">
+            <i class="fa-solid fa-check"></i>
+        </div>
+        <h2 style="font-family: 'Outfit'; font-size: 2.2rem; color: var(--success); margin-bottom: 0.5rem;">Loan Status: Approved</h2>
+        <p style="color: var(--text-muted); font-size: 1.05rem;">The predictive model indicates that the applicant is highly eligible for this loan structure.</p>
+    {% else %}
+        <!-- REJECTED RESULT STATE -->
+        <div class="result-icon result-rejected">
+            <i class="fa-solid fa-xmark"></i>
+        </div>
+        <h2 style="font-family: 'Outfit'; font-size: 2.2rem; color: var(--error); margin-bottom: 0.5rem;">Loan Status: Rejected</h2>
+        <p style="color: var(--text-muted); font-size: 1.05rem;">The predictive model flags this applicant as high risk. Review of credentials is recommended.</p>
+    {% endif %}
+
+    <!-- Probability gauge -->
+    <div style="margin: 2.5rem 0 1.5rem 0;">
+        <h4 style="color: var(--text-muted); font-weight: 500; font-size: 0.9rem; text-align: left; margin-bottom: 0.5rem;">Approval Confidence Level:</h4>
+        <div class="probability-bar-container">
+            <div class="probability-bar" style="width: {{ prediction.probability_score * 100 }}%; {% if prediction.prediction_status != 'Approved' %}background: linear-gradient(to right, #ea580c, var(--error));{% endif %}"></div>
+            <div class="probability-text">{{ (prediction.probability_score * 100)|round(1) }}% Probability</div>
+        </div>
+    </div>
+
+    <!-- Applicant Summary Details -->
+    <h3 style="font-family: 'Outfit'; text-align: left; margin-top: 2rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--glass-border);">Evaluation Summary</h3>
+
+    <div class="details-grid">
+        <div class="detail-item">
+            <span>Applicant Name</span>
+            <p>{{ user.name }}</p>
+        </div>
+        <div class="detail-item">
+            <span>Email &amp; Role</span>
+            <p>{{ user.email }} ({{ user.role }})</p>
+        </div>
+        <div class="detail-item">
+            <span>Gender &amp; Marriage</span>
+            <p>{{ profile.gender }} / Married: {{ profile.married }}</p>
+        </div>
+        <div class="detail-item">
+            <span>Education &amp; Employ</span>
+            <p>{{ profile.education }} / Self-Employed: {{ profile.self_employed }}</p>
+        </div>
+        <div class="detail-item">
+            <span>Applicant Income</span>
+            <p>${{ "{:,.2f}".format(loan.income) }} / Mo</p>
+        </div>
+        <div class="detail-item">
+            <span>Co-Applicant Income</span>
+            <p>${{ "{:,.2f}".format(loan.coapplicant_income) }} / Mo</p>
+        </div>
+        <div class="detail-item">
+            <span>Loan Amount &amp; Term</span>
+            <p>${{ "{:,.0f}".format(loan.loan_amount * 1000) }} ({{ loan.loan_term }} Days)</p>
+        </div>
+        <div class="detail-item">
+            <span>Credit History &amp; Score</span>
+            <p>
+                {% if credit.credit_history_status == 1 %}
+                    <span style="color: var(--success); font-weight: bold;">Good</span> (Score: {{ credit.credit_score|round(0) }})
+                {% else %}
+                    <span style="color: var(--error); font-weight: bold;">Poor</span> (Score: {{ credit.credit_score|round(0) }})
+                {% endif %}
+            </p>
+        </div>
+    </div>
+
+    <!-- Model info -->
+    <div style="background: rgba(255, 255, 255, 0.01); border: 1px solid var(--glass-border); border-radius: 8px; padding: 1rem; text-align: left; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 2rem;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 0.3rem;">
+            <span>Prediction Model Used:</span>
+            <span style="color: var(--text-main); font-weight: 500;">{{ model.model_name }} ({{ model.algorithm }})</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 0.3rem;">
+            <span>Model Testing Accuracy:</span>
+            <span style="color: var(--text-main); font-weight: 500;">{{ model.testing_accuracy|round(1) }}%</span>
+        </div>
+        <div style="display: flex; justify-content: space-between;">
+            <span>Transaction Datetime:</span>
+            <span style="color: var(--text-main); font-weight: 500;">{{ prediction.prediction_time.strftime('%Y-%m-%d %H:%M:%S') }} UTC</span>
+        </div>
+    </div>
+
+    <!-- Actions -->
+    <div style="display: flex; gap: 1rem; justify-content: center;">
+        <a href="{{ url_for('predict') }}" class="btn-primary"><i class="fa-solid fa-rotate-left"></i> New Prediction</a>
+        <a href="{{ url_for('history') }}" class="btn-secondary"><i class="fa-solid fa-list-ul"></i> View History</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Predict loan eligibility using advanced machine learning models (XGBoost, RandomForest, DecisionTree, KNN) with a beautiful interactive dashboard.">
+    <title>{% block title %}Smart Lender - AI-Powered Loan Eligibility Prediction{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <div class="nav-container">
+            <a href="{{ url_for('home') }}" class="logo">
+                <i class="fa-solid fa-building-columns"></i> SMART Lender <span>kvnvk</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="{{ url_for('home') }}" class="{% if request.path == '/' %}active{% endif %}">Home</a></li>
+                <li><a href="{{ url_for('predict') }}" class="{% if request.path == '/predict' %}active{% endif %}">Predict Eligibility</a></li>
+                <li><a href="{{ url_for('history') }}" class="{% if request.path == '/history' %}active{% endif %}">History</a></li>
+            </ul>
+        </div>
+    </header>
+
+    <main>
+        <!-- Flash messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="glass-card" style="border-color: {% if category == 'danger' %}var(--error){% else %}var(--success){% endif %}; margin-bottom: 1.5rem; padding: 1rem; border-left: 5px solid;">
+                        <p style="color: {% if category == 'danger' %}var(--error){% else %}var(--success){% endif %}; font-weight: 500;">
+                            <i class="fa-solid {% if category == 'danger' %}fa-triangle-exclamation{% else %}fa-circle-check{% endif %}"></i>
+                            {{ message }}
+                        </p>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Smart Lender Inc. All rights reserved. Developed with Python, Flask & Machine Learning.</p>
+    </footer>
+</body>
+</html>
